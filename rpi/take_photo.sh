@@ -3,7 +3,7 @@
 DEFAULT_BASE_DIR="/home/emli/camera"
 
 # Create directory with the current date
-DATE=$(date +"%Y-%m-%d")
+DATE_DIR=$(date +"%Y-%m-%d")
 TARGET_DIR="${2:-$DEFAULT_BASE_DIR/$DATE_DIR}"
 mkdir -p "$TARGET_DIR"
 
