@@ -1,15 +1,18 @@
 #!/bin/bash
 
+DEFAULT_BASE_DIR="/home/emli/camera"
+
 # Create directory with the current date
 DATE=$(date +"%Y-%m-%d")
-mkdir -p "/home/emli/camera/$DATE"
+TARGET_DIR="${2:-$DEFAULT_BASE_DIR/$DATE_DIR}"
+mkdir -p "$TARGET_DIR"
 
 # Filename based on local summer time
 FILENAME=$(date +"%H%M%S_%3N.jpg")
-FULLPATH="/home/emli/camera/$DATE/$FILENAME"
+FULLPATH="$TARGET_DIR/$FILENAME"
 
 # Trigger type based on input
-TRIGGER_TYPE="$1" # Time, Motion, External
+TRIGGER_TYPE="${1:-Time}"
 
 # Take a photo
 rpicam-still -t 0.01 -o "$FULLPATH"
