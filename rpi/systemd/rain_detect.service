@@ -4,9 +4,10 @@ After=network.target
 
 [Service]
 ExecStart=/home/emli/scripts/rain_detect.sh
-WorkingDirectory=/home/emli/scripts/
 Restart=always
-User=root
+User=emli
+Group=emli
+WorkingDirectory=/home/emli/scripts/
 
 [Install]
 WantedBy=multi-user.target

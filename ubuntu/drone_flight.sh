@@ -24,9 +24,6 @@ RPI_IP="10.0.0.10"
 # Log file on Raspberry Pi
 RPI_LOG_FILE="/home/emli/logs/wildlife_camera.log"
 
-# Rsync log file to track copied files
-RSYNC_LOG_FILE="/tmp/rsync_log.txt"
-
 
 # Function to scan for the camera
 scan_for_camera() {
@@ -52,7 +49,7 @@ copy_photos() {
     rsync -avz --exclude='temp/' --log-file=$RSYNC_LOG_FILE $RPI_USER@$RPI_IP:$CAMERA_PHOTO_DIR/ $DRONE_PHOTO_DIR/
     if [ $? -eq 0 ]; then
         log_event "Photos and metadata copied successfully."
-
+        
         # Update metadata JSON files on the Raspberry Pi based on copied files
         update_metadata_on_rpi
     else
@@ -62,21 +59,27 @@ copy_photos() {
 
 # Function to update metadata JSON files on the Raspberry Pi
 update_metadata_on_rpi() {
+    echo "Started updating metadata"
     log_event "Updating metadata JSON files with drone copy info"
-    # Read the rsync log file to get the list of copied files
-    while IFS= read -r line; do
-        if [[ "$line" == *.json ]]; then
-            filepath=$(dirname "$line")
-            filename=$(basename "$line")
-            rpi_filepath="$CAMERA_PHOTO_DIR/$filepath/$filename"
-            ssh $RPI_USER@$RPI_IP "jq --arg drone_id '$DRONE_ID' --argjson epoch $(date +%s.%N) '.\"Drone Copy\" = {\"Drone ID\": \$drone_id, \"Seconds Epoch\": \$epoch}' $rpi_filepath > $CAMERA_PHOTO_DIR/tmp.$$.json && mv $CAMERA_PHOTO_DIR/tmp.$$.json $rpi_filepath">
-            if [ $? -eq 0 ]; then
-                log_event "Updated metadata: $rpi_filepath"
+    for dir in $DRONE_PHOTO_DIR/*/; do
+        for file in $dir/*.json; do
+            if [ -f "$file" ]; then
+                filename=$(basename "$file")
+                filepath=$(dirname "$file")
+                rpi_filepath="$CAMERA_PHOTO_DIR/${filepath##*/}/$filename"
+                ssh $RPI_USER@$RPI_IP "jq --arg drone_id '$DRONE_ID' --argjson epoch $(date +%s.%N) '.\"Drone Copy\" = {\"Drone ID\": \$drone_id, \"Seconds Epoch\": \$epoch}' $rpi_filepath > /home/emli/tmp.$$.json && mv /home/emli/tmp.$$.json $rpi_filepath"
+                if [ $? -eq 0 ]; then
+                    log_event "Updated metadata: $rpi_filepath"
+                else
+                    log_event "Failed to update metadata: $rpi_filepath"
+                fi
             else
-                log_event "Failed to update metadata: $rpi_filepath"
+                log_event "Metadata file not found: $file"
             fi
-        fi
-    done < <(grep "^/" $RSYNC_LOG_FILE)
+        done
+    done
+    echo "Finished updating metadata"
+    log_event "Finished updating metadata JSON files"
 }
 
 # Function to log events on the raspberry pi log file
@@ -110,5 +113,5 @@ while true; do
       echo "Camera not found. Scanning again..."
   fi
 
-  sleep 10
+  sleep 30
 done

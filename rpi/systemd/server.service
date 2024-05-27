@@ -7,7 +7,8 @@ WorkingDirectory=/home/emli/server
 Environment="PATH=/home/emli/server/myenv/bin"
 ExecStart=/home/emli/server/myenv/bin/python /home/emli/server/server.py
 Restart=always
-User=root
+User=emli
+Group=emli
 
 [Install]
 WantedBy=multi-user.target

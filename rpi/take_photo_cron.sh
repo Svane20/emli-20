@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Lock file
-LOCK_FILE="/tmp/camera.lock"
+LOCK_FILE="/home/emli/camera.lock"
 
 # Log directory
 LOG_DIR="/home/emli/logs"

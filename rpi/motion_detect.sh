@@ -2,7 +2,7 @@
 
 # Base directory for storing photos
 BASE_DIR="/home/emli/camera"
-LOCK_FILE="/tmp/camera.lock"
+LOCK_FILE="/home/emli/camera.lock"
 
 # Path to motion_detect.py
 MOTION_DETECT_PATH="/home/emli/scripts/motion_detect.py"
