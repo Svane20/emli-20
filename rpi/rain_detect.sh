@@ -16,7 +16,7 @@ MQTT_SUB_TOPIC="my_user/wipe_lens"
 
 # Log directory
 LOG_DIR="/home/emli/logs"
-LOG_FILE="$LOG_DIR/rain_detect.log"
+LOG_FILE="$LOG_DIR/wildlife_camera.log"
 mkdir -p "$LOG_DIR"
 
 # Function to log events

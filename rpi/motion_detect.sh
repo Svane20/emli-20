@@ -14,7 +14,7 @@ mkdir -p "$TEMP_DIR"
 
 # Log directory
 LOG_DIR="/home/emli/logs"
-LOG_FILE="$LOG_DIR/motion_detect.log"
+LOG_FILE="$LOG_DIR/wildlife_camera.log"
 mkdir -p "$LOG_DIR"
 
 # Function to log events

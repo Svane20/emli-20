@@ -14,7 +14,7 @@ LOCK_FILE="/tmp/camera.lock"
 
 # Log directory
 LOG_DIR="/home/emli/logs"
-LOG_FILE="$LOG_DIR/mqtt-bridge.log"
+LOG_FILE="$LOG_DIR/wildlife_camera.log"
 mkdir -p "$LOG_DIR"
 
 # Function to log events
