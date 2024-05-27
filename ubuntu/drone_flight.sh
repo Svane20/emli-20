@@ -69,7 +69,7 @@ update_metadata_on_rpi() {
             filepath=$(dirname "$line")
             filename=$(basename "$line")
             rpi_filepath="$CAMERA_PHOTO_DIR/$filepath/$filename"
-            ssh $RPI_USER@$RPI_IP "jq --arg drone_id '$DRONE_ID' --argjson epoch $(date +%s.%N) '.\"Drone Copy\" = {\"Drone ID\": \$drone_id, \"Seconds Epoch\": \$epoch}' $rpi_filepath > $CAMERA_PHOTO_DI>
+            ssh $RPI_USER@$RPI_IP "jq --arg drone_id '$DRONE_ID' --argjson epoch $(date +%s.%N) '.\"Drone Copy\" = {\"Drone ID\": \$drone_id, \"Seconds Epoch\": \$epoch}' $rpi_filepath > $CAMERA_PHOTO_DIR/tmp.$$.json && mv $CAMERA_PHOTO_DIR/tmp.$$.json $rpi_filepath">
             if [ $? -eq 0 ]; then
                 log_event "Updated metadata: $rpi_filepath"
             else
