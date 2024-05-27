@@ -12,6 +12,17 @@ MQTT_EXTERNAL_TOPIC="my_user/count"
 TAKE_PHOTO_SCRIPT="/home/emli/scripts/take_photo.sh"
 LOCK_FILE="/tmp/camera.lock"
 
+# Log directory
+LOG_DIR="/home/emli/logs"
+LOG_FILE="$LOG_DIR/mqtt-bridge.log"
+mkdir -p "$LOG_DIR"
+
+# Function to log events
+log_event() {
+    local event_message="$1"
+    echo "[$(date +'%Y-%m-%d %H:%M:%S')] [MQTT-BRIDGE] $event_message" >> "$LOG_FILE"
+}
+
 # Function to handle messages
 handle_message() {
     local topic=$1
@@ -19,7 +30,7 @@ handle_message() {
 
     if [ "$topic" = "$MQTT_EXTERNAL_TOPIC" ]; then
         if [ "$message" -eq 1 ] 2>/dev/null; then
-            echo "External trigger detected, attempting to take photo"
+            log_event "External trigger detected, attempting to take photo"
 
             # Use flock to acquire the lock in a blocking mode
             {
@@ -28,15 +39,15 @@ handle_message() {
                 # Take the photo
                 PHOTO_PATH=$($TAKE_PHOTO_SCRIPT "External")
                 if [ $? -eq 0 ]; then
-                    echo "Photo taken successfully: $PHOTO_PATH"
+                    log_event "External photo taken successfully: $PHOTO_PATH"
                 else
-                    echo "Failed to take photo"
+                    log_event "Failed to take External photo"
                 fi
             } 9>"$LOCK_FILE"
         fi
     elif [ "$topic" = "$MQTT_RAIN_TOPIC" ]; then
         if echo "$message" | grep -q '"rain_detect": 1'; then
-            echo "Rain detected, requesting lens wipe."
+            log_event "Rain detected, requesting lens wipe."
             echo "Sending sequence 0, 180, 0 to MQTT topic: $MQTT_WIPE_LENS_TOPIC"
 
             # Sequence of 0, 180 and 0 to wipe the lens

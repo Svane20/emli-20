@@ -14,15 +14,26 @@ MQTT_PASSWORD="Duller12"
 MQTT_PUB_TOPIC="my_user/rain"
 MQTT_SUB_TOPIC="my_user/wipe_lens"
 
+# Log directory
+LOG_DIR="/home/emli/logs"
+LOG_FILE="$LOG_DIR/rain_detect.log"
+mkdir -p "$LOG_DIR"
+
+# Function to log events
+log_event() {
+    local event_message="$1"
+    echo "[$(date +'%Y-%m-%d %H:%M:%S')] [RAIN-DETECT] $event_message" >> "$LOG_FILE"
+}
+
 # Function to send a command to the Pico
 wipe_lens_command() {
-  echo "Sending wiper angle command: $1"
+  log_event "Sending wiper angle command: $1"
   echo "{\"wiper_angle\": $1}" > $PORT
 }
 
 # Publish MQTT message
 publish_mqtt() {
-  echo "Publishing MQTT message: $1"
+  log_event "Publishing MQTT message: $1"
   mosquitto_pub -h $MQTT_SERVER -u $MQTT_USERNAME -P $MQTT_PASSWORD -t $MQTT_PUB_TOPIC -m "$1"
 }
 
@@ -31,15 +42,15 @@ subscribe_mqtt() {
   echo "Starting MQTT subscription to topic: $MQTT_SUB_TOPIC"
   while true; do
     mosquitto_sub -h $MQTT_SERVER -u $MQTT_USERNAME -P $MQTT_PASSWORD -t $MQTT_SUB_TOPIC | while read -r msg; do
-      echo "Received MQTT message: $msg"
+      log_event "Received MQTT message: $msg"
       wiper_angle=$(echo "$msg" | jq -r '.wiper_angle')
       if [ -n "$wiper_angle" ]; then
         wipe_lens_command "$wiper_angle"
       else
-        echo "Invalid message format or missing wiper_angle"
+        log_event "Invalid message format or missing wiper_angle"
       fi
     done
-    echo "Connection lost. Retrying in 5 seconds..."
+    log_event "Connection lost. Retrying in 5 seconds..."
     sleep 5
   done
 }
@@ -52,7 +63,7 @@ subscribe_mqtt &
 
 while read -r line <&3; do
   if echo "$line" | grep -q '"rain_detect": 1'; then
-    echo "Rain detected, requesting lens wipe."
+    log_event "Rain detected, requesting lens wipe."
 
     # Publish rain detection message via MQTT
     publish_mqtt '{"rain_detect": 1}'
@@ -62,7 +73,7 @@ done
 # Clean up before exit
 cleanup() {
   exec 3<&-  # Close file descriptor 3
-  echo "Stopped listening on $PORT"
+  log_event "Stopped listening on $PORT"
 }
 trap cleanup EXIT
 

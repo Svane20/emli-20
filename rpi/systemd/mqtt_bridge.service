@@ -1,0 +1,12 @@
+[Unit]
+Description=MQTT Bridge Service
+After=network.target
+
+[Service]
+ExecStart=/home/emli/scripts/mqtt_bridge.sh
+WorkingDirectory=/home/emli/scripts/
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
