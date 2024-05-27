@@ -23,5 +23,5 @@ log_event() {
     # Call the take_photo.sh script with the appropriate trigger
     /home/emli/scripts/take_photo.sh "Time"
 
-    log_event "Photo taken successfully"
+    log_event "Photo taken with Trigger: 'Time'"
 } 9>"$LOCK_FILE"

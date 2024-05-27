@@ -50,7 +50,7 @@ subscribe_mqtt() {
         log_event "Invalid message format or missing wiper_angle"
       fi
     done
-    log_event "Connection lost. Retrying in 5 seconds..."
+    echo "Connection lost. Retrying in 5 seconds..."
     sleep 5
   done
 }

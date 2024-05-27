@@ -2,17 +2,6 @@
 
 DEFAULT_BASE_DIR="/home/emli/camera"
 
-# Log directory
-LOG_DIR="/home/emli/logs"
-LOG_FILE="$LOG_DIR/take_photo.log"
-mkdir -p "$LOG_DIR"
-
-# Function to log events
-log_event() {
-    local event_message="$1"
-    echo "[$(date +'%Y-%m-%d %H:%M:%S')] [TAKE-PHOTO] $event_message" >> "$LOG_FILE"
-}
-
 # Create directory with the current date
 DATE_DIR=$(date +"%Y-%m-%d")
 TARGET_DIR="${2:-$DEFAULT_BASE_DIR/$DATE_DIR}"
@@ -24,8 +13,6 @@ FULLPATH="$TARGET_DIR/$FILENAME"
 
 # Trigger type based on input
 TRIGGER_TYPE="${1:-Time}"
-
-log_event "Taking photo with trigger: $TRIGGER_TYPE"
 
 # Take a photo
 rpicam-still -t 0.01 -o "$FULLPATH"
@@ -52,8 +39,6 @@ cat <<EOF >"${FULLPATH%.jpg}.json"
   "ISO": "$ISO"
 }
 EOF
-
-log_event "Photo taken and metadata saved: $FULLPATH"
 
 # Return the full path of the photo taken
 echo "$FULLPATH"

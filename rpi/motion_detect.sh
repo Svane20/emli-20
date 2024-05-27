@@ -50,7 +50,7 @@ while true; do
         DETECT_OUTPUT=$(python3 "$MOTION_DETECT_PATH" "$PHOTO1" "$PHOTO2")
         if echo "$DETECT_OUTPUT" | grep -q "Motion detected"; then
             echo "Motion detected"
-            log_event "Motion was detected, saving latest image"
+            log_event "Motion was detected, saving latest image with Trigger: 'Motion'"
 
             # Extract the JSON filepath
             JSON_FILE2="${PHOTO2%.jpg}.json"

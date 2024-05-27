@@ -39,7 +39,7 @@ handle_message() {
                 # Take the photo
                 PHOTO_PATH=$($TAKE_PHOTO_SCRIPT "External")
                 if [ $? -eq 0 ]; then
-                    log_event "External photo taken successfully: $PHOTO_PATH"
+                    log_event "Photo taken with Trigger: 'External': $PHOTO_PATH"
                 else
                     log_event "Failed to take External photo"
                 fi
