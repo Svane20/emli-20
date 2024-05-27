@@ -1,0 +1,13 @@
+[Unit]
+Description=A simple Flask web application
+After=network.target
+
+[Service]
+WorkingDirectory=/home/emli/server
+Environment="PATH=/home/emli/server/myenv/bin"
+ExecStart=/home/emli/server/myenv/bin/python /home/emli/server/server.py
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target

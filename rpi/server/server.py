@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory, jsonify, render_template_string
+from flask import Flask, send_from_directory, render_template_string
 import os
 
 app = Flask(__name__)
@@ -28,22 +28,70 @@ def index():
 
     return render_template_string("""
         <html>
+        <head>
+            <style>
+                .image-preview {
+                    width: 200px;
+                    height: 200px;
+                    object-fit: cover;
+                }
+                .image-list {
+                    list-style-type: none;
+                    padding: 0;
+                    display: flex;
+                    flex-wrap: wrap;
+                }
+                .image-list li {
+                    margin: 10px;
+                    flex: 1 1 calc(33.333% - 20px);
+                    box-sizing: border-box;
+                }
+                .image-container {
+                    text-align: center;
+                }
+                .log-button {
+                    display: inline-block;
+                    padding: 10px 20px;
+                    font-size: 16px;
+                    cursor: pointer;
+                    text-align: center;
+                    text-decoration: none;
+                    outline: none;
+                    color: #fff;
+                    background-color: #4CAF50;
+                    border: none;
+                    border-radius: 15px;
+                    box-shadow: 0 9px #999;
+                    margin-bottom: 20px;
+                }
+                .log-button:hover {background-color: #3e8e41}
+                .log-button:active {
+                    background-color: #3e8e41;
+                    box-shadow: 0 5px #666;
+                    transform: translateY(4px);
+                }
+                .log-heading {
+                    color: #4CAF50;
+                    font-size: 24px;
+                    margin: 20px 0 10px 0;
+                }
+            </style>
+        </head>
         <body>
             <h1>Wildlife Camera Images</h1>
-            <ul>
+            <a href="{{ url_for('get_log') }}" class="log-button">View Log File</a>
+            <ul class="image-list">
             {% for file in files %}
                 <li>
-                    <a href="{{ url_for('get_image', path=file.path, filename=file.image) }}">
-                        {{ file.image }}
-                    </a>
-                    (<a href="{{ url_for('get_metadata', path=file.path, filename=file.json) }}">
-                        metadata
-                    </a>)
+                    <div class="image-container">
+                        <a href="{{ url_for('get_metadata', path=file.path, filename=file.json) }}">
+                            <img src="{{ url_for('get_image', path=file.path, filename=file.image) }}" alt="{{ file.image }}" class="image-preview">
+                        </a>
+                        <br>{{ file.image }}
+                    </div>
                 </li>
             {% endfor %}
             </ul>
-            <h2>Log File</h2>
-            <a href="{{ url_for('get_log') }}">View Log File</a>
         </body>
         </html>
     """, files=files)
