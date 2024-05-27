@@ -27,7 +27,6 @@ ISO=$(echo "$EXIFDATA" | grep "ISO" | grep -oP "\d+")
 EXPOSURE_TIME=$(echo "$EXIFDATA" | grep "Exposure Time" | grep -oP "\d+/\d+")
 SUBJECT_DISTANCE=$(echo "$EXIFDATA" | grep "Subject Distance" | grep -oP "\d+.*$")
 
-
 # Create JSON metadata file
 cat <<EOF >"${FULLPATH%.jpg}.json"
 {
@@ -40,3 +39,6 @@ cat <<EOF >"${FULLPATH%.jpg}.json"
   "ISO": "$ISO"
 }
 EOF
+
+# Return the full path of the photo taken
+echo "$FULLPATH"

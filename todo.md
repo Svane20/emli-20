@@ -1,0 +1,2 @@
+- Update Subject Distance to only show the number
+- Added the motion_detect.sh as a service to run as expected on startup
