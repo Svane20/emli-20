@@ -35,10 +35,6 @@ WiFiClient wifi_client;
 Adafruit_MQTT_Client mqtt(&wifi_client, MQTT_SERVER, MQTT_SERVERPORT, MQTT_USERNAME, MQTT_KEY);
 Adafruit_MQTT_Publish count_mqtt_publish = Adafruit_MQTT_Publish(&mqtt, MQTT_USERNAME MQTT_TOPIC);
 
-// publish
-#define PUBLISH_INTERVAL 30000
-unsigned long prev_post_time;
-
 // debug
 #define DEBUG_INTERVAL 2000
 unsigned long prev_debug_time;
@@ -150,7 +146,6 @@ void loop()
     if (publish_now)
     {
       publish_now = false;
-      prev_post_time = millis();
       publish_data();
     }
    
