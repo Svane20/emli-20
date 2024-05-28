@@ -6,8 +6,8 @@
   "Subject Distance": "0.1608492842",
   "Exposure Time": "1/12",
   "ISO": "403",
-  "Annotation": {
-    "Source": "Ollama:7b",
-    "Text": " The image shows a hand holding up a smartphone with its screen facing the viewer. The hand appears to be taking a picture of something off-screen, possibly capturing a video or a still photo. The phone is in portrait orientation. The background is blurred but seems to be an indoor environment with some electronic devices. There's no text present in the image. "
+  "Drone Copy": {
+    "Drone ID": "WILDDRONE-001",
+    "Seconds Epoch": 1716856378.873487
   }
 }
