@@ -22,6 +22,7 @@ LOG_DB="$HOME/drone_flight_log.db"
 # IP address of Raspberry Pi
 RPI_USER="emli" 
 RPI_IP="10.0.0.10"
+RPI_SSH_KEY="$HOME/.ssh/id_ed25519_rpi"
 
 # Log file on Raspberry Pi
 RPI_LOG_FILE="/home/emli/logs/wildlife_camera.log"
@@ -37,7 +38,7 @@ scan_for_camera() {
 sync_time() {
     log_event "Synchronizing time with the drone"
     local current_time=$(date -u +"%Y-%m-%d %H:%M:%S")
-    ssh $RPI_USER@$RPI_IP "sudo date -u -s '$current_time'"
+    ssh -i $RPI_SSH_KEY $RPI_USER@$RPI_IP "sudo date -u -s '$current_time'"
     if [ $? -eq 0 ]; then
         log_event "Time synchronized successfully."
     else
@@ -69,7 +70,7 @@ update_metadata_on_rpi() {
                 filename=$(basename "$file")
                 filepath=$(dirname "$file")
                 rpi_filepath="$CAMERA_PHOTO_DIR/${filepath##*/}/$filename"
-                ssh $RPI_USER@$RPI_IP "jq --arg drone_id '$DRONE_ID' --argjson epoch $(date +%s.%N) '.\"Drone Copy\" = {\"Drone ID\": \$drone_id, \"Seconds Epoch\": \$epoch}' $rpi_filepath > /home/emli/tmp.$$.json && mv /home/emli/tmp.$$.json $rpi_filepath"
+                ssh -i $RPI_SSH_KEY $RPI_USER@$RPI_IP "jq --arg drone_id '$DRONE_ID' --argjson epoch $(date +%s.%N) '.\"Drone Copy\" = {\"Drone ID\": \$drone_id, \"Seconds Epoch\": \$epoch}' $rpi_filepath > /home/emli/tmp.$$.json && mv /home/emli/tmp.$$.json $rpi_filepath"
                 if [ $? -eq 0 ]; then
                     echo "Updated metadata: $rpi_filepath"
                     log_event "Updated metadata: $rpi_filepath"
@@ -89,7 +90,7 @@ update_metadata_on_rpi() {
 # Function to log events on the raspberry pi log file
 log_event() {
     local event_message="$1"
-    ssh $RPI_USER@$RPI_IP "echo \"[$(date +'%Y-%m-%d %H:%M:%S')] [DRONE-FLIGHT] $event_message\" >> $RPI_LOG_FILE"
+    ssh -i $RPI_SSH_KEY $RPI_USER@$RPI_IP "echo \"[$(date +'%Y-%m-%d %H:%M:%S')] [DRONE-FLIGHT] $event_message\" >> $RPI_LOG_FILE"
 }
 
 # Function to disconnect from the internet
