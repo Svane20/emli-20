@@ -31,45 +31,58 @@ When the lock is released, the next script in line will be able to access the ca
 ## Raspberry PI
 
 ### take_photo.sh
-- Added the script to crontab to run this script every 5 minutes with Trigger Time
-- Added the necessary information in the script to output the format as expected
+- Will take a photo based on the Trigger parsed as an argument
+- When a photo has been taken the photo and the associated JSON sidecar will be moved destination folder based on the date it was taken
 
 ### take_photo_cron.sh
-- Periodically takes a photo and logs the events
-- Calls the external script "take_photo.sh" to take a photo with the Trigger "Time"
-- A flock is used to prevent multiple instances of the script from running simultanously
+- Added the script to the cronjob to ensure the script is executed every five minutes
+- Logging will be added to `wildlife_camera.log` file with the tag `[TAKE-PHOTO-CRON]`
+- Calls the external script `take_photo.sh` to take a photo with the Trigger `Time`
+- A flock is used, which only runs one instance of the script at a time, preventing race conditions.
 
 ### mqtt_bridge.sh
 - Added the script as a service (systemd) to ensure this process will run in the background and on startup
-- This will read from the my_user/count topic from the ESP32 and take a photo using the take_photo.sh script with the Trigger External
-- This will read from the my_user/rain if rain was detected through MQTT from the rain_detect.sh and then the sequence of 0, 180, 0 to my_user/wipe_lens topic
+- Logging will be added to `wildlife_camera.log` file with the tag `[MQTT-BRIDGE]`
+- This will read from the my_user/count MQTT topic from the ESP32 and take a photo using the `take_photo.sh` script with the Trigger `External`
+- This will read from the my_user/rain MQTT topic if rain was detected through MQTT from the `rain_detect.sh` and then send the sequence of 0, 180, 0 to my_user/wipe_lens MQTT topic
+- A flock is used, which only runs one instance of the script at a time, preventing race conditions for the part of the script that is related to take a photo 
 
 ### rain_detect.sh
 - Added the script as a service (systemd) to ensure this process will run in the background and on startup
-- This will send messages when the BOOTSEL button is pressed on the Pico and send a mqtt message to the my_user/rain
-- When a message is received from rain_detect.sh it will write to the serial port on the Pico to rotate the servo based on the defined angle
+- Logging will be added to `wildlife_camera.log` file with the tag `[RAIN-DETECT]`
+- This will send messages when the BOOTSEL button is pressed on the Pico the script will look for the line output `"rain_detect": 1` and will send a MQTT message to the my_user/rain MQTT topic.
+- When a message is received from my_user/wipe_lens MQTT topic it will write to the serial port on the Pico to rotate the servo based on the defined angle
 
 ### motion_detect.sh
-- Captures two consecutive photos and checks for motion between the two photos using a Python script.
-- If motion is detected, the event is logged, and the metadata is updated with a "Motion" trigger, which moves the photos and metadata to a directory.
+- Added the script as a service (systemd) to ensure this process will run in the background and on startup
+- Logging will be added to `wildlife_camera.log` file with the tag `[MOTION-DETECT]`
+- Captures two consecutive photos using the `take_photo.sh` script and checks for motion between the two photos using the `motion_detect.py` Python script.
+- If motion is detected, the event is logged, and the metadata is updated with Trigger `Motion`, and moves the latest photo and metadata to a camera directory based on the date.
 - Unnecessary files are also removed to manage storage.
-- A lock file is included, which only runs one instance of the script at a time, preventing race conditions.
+- A flock is used, which only runs one instance of the script at a time, preventing race conditions.
 
 ### run_server.sh
 - This script creates (if it does not already exist) and activates the virtual environment with Flask.
+- The script will run the server.py Python script to instantiate the Flask web server on port `5000`
+- The endpoints provided are:
+  - `/` - Will fetch all images located in the camera directory excluding the temp directory to be displayed on the website
+  - `/images/<path:path>/<filename>` - Fetches a specific image based on the filepath and filename
+  - `/metadata/<path:path>/<filename>` - Fetches a specific JSON file based on the filepath and filename
+  - `/log` - Fetches the log file
 
 # Ubuntu Desktop
 
 ## drone_flight.sh
-- Scans for the camera's SSID and connects to it. The script runs continiously and scans for the camera every 30 seconds.
+- Scans for the camera's SSID and connects to it.
 - If the camera is located, a disconnection from current network occurs, and a connection to the camera's network is established.
 - This results in a synchronization between the drone's system time and the Raspberry Pi, ensuring accurate timestamps.
 - Photos and metadata are copied from the Raspberry Pi to the drone.
 - Metadata files on the Raspberry Pi are updated to include a Drone Copy Event.
-- Also logs other events, such as time synchronization, photo copying and metadata updates.
+- The `wildlife_camera.log` log file on the Raspberry Pi is also updated based on the events such as time synchronization, photo copying and metadata updates.
 - Monitors and logs WiFi signal quality to an SQLite database.
+- The script runs continuously and upon completion the script will wait 30 seconds to perform the process again to simulate the drone flies way and comes back at a different time.
 
 ## annotate_and_commit.sh
-- By applying a continious processing for all JPEG photos in the directory, Ollama can annotate each photo.
+- By applying a continuous processing for all JPEG photos in the directory, Ollama can annotate each photo.
 - On annotation, the JSON metadata file for the photo is updated and any errors encountered during the process is logged.
 - All changed JSON metadata files are commited to the GitHub repository.
