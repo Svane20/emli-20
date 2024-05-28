@@ -19,7 +19,6 @@ annotate_photo() {
     local json_path="${photo_path%.jpg}.json"
 
     echo "Processing image: $photo_path"
-    echo "Expected JSON path: $json_path"
 
     # Check if the image has already been annotated
     if [ -f "$json_path" ] && jq -e '.Annotation' "$json_path" > /dev/null 2>&1; then
