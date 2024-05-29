@@ -1,0 +1,26 @@
+[2024-05-29 11:05:06] [TAKE-PHOTO-CRON] 5 minutes have passed, taking photo
+[2024-05-29 11:05:08] [TAKE-PHOTO-CRON] Photo taken with Trigger: 'Time'
+[2024-05-29 11:06:04] [MQTT-BRIDGE] External trigger detected, attempting to take photo
+[2024-05-29 11:06:12] [MQTT-BRIDGE] Photo taken with Trigger: 'External': /home/emli/camera/2024-05-29/110611_036.jpg
+[2024-05-29 11:06:17] [RAIN-DETECT] Rain detected, requesting lens wipe.
+[2024-05-29 11:06:17] [RAIN-DETECT] Publishing MQTT message: {"rain_detect": 1}
+[2024-05-29 11:06:17] [MQTT-BRIDGE] Rain detected, requesting lens wipe.
+[2024-05-29 11:06:17] [RAIN-DETECT] Received MQTT message: {"wiper_angle": 0}
+[2024-05-29 11:06:17] [RAIN-DETECT] Sending wiper angle command: 0
+[2024-05-29 11:06:19] [RAIN-DETECT] Received MQTT message: {"wiper_angle": 180}
+[2024-05-29 11:06:19] [RAIN-DETECT] Sending wiper angle command: 180
+[2024-05-29 11:06:21] [RAIN-DETECT] Received MQTT message: {"wiper_angle": 0}
+[2024-05-29 11:06:21] [RAIN-DETECT] Sending wiper angle command: 0
+[2024-05-29 11:06:35] [MOTION-DETECT] Motion was detected, saving latest image with Trigger: 'Motion'
+[2024-05-29 11:06:43] [MOTION-DETECT] Motion was detected, saving latest image with Trigger: 'Motion'
+[2024-05-29 11:06:48] [DRONE-FLIGHT] Synchronizing time with the drone
+[2024-05-29 11:06:48] [DRONE-FLIGHT] Time synchronized successfully.
+[2024-05-29 11:06:49] [DRONE-FLIGHT] Copying photos and metadata from the Raspberry Pi
+[2024-05-29 11:06:50] [DRONE-FLIGHT] Photos and metadata copied successfully.
+[2024-05-29 11:06:50] [DRONE-FLIGHT] Updating metadata JSON files with drone copy info
+[2024-05-29 11:06:51] [DRONE-FLIGHT] Updated metadata: /home/emli/camera/2024-05-29/110506_657.json
+[2024-05-29 11:06:52] [DRONE-FLIGHT] Updated metadata: /home/emli/camera/2024-05-29/110611_036.json
+[2024-05-29 11:06:52] [DRONE-FLIGHT] Updated metadata: /home/emli/camera/2024-05-29/110630_894.json
+[2024-05-29 11:06:53] [DRONE-FLIGHT] Updated metadata: /home/emli/camera/2024-05-29/110639_022.json
+[2024-05-29 11:06:54] [DRONE-FLIGHT] Finished updating metadata JSON files
+[2024-05-29 11:06:54] [DRONE-FLIGHT] Operation completed
