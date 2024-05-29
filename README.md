@@ -6,6 +6,7 @@
 The folder structure is based on which physical device uses the associated scripts
 
 - Annotated Metadata - Contains the JSON sidecar for an image annotated with Ollama model llava:7b
+- Demo - Contains all the photos and JSON sidecar files used in the demo, including the demo video and the log file during the video
 - ESP8266 - Contains the Arduino file running on the ESP8266 where the original script have been modified, so when the button is pressed the MQTT message is sent immediately
 - Pico - Contains the Arduino file running on the Raspberry Pico
 - RPI - Contains:
