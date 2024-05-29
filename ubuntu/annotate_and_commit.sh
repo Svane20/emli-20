@@ -82,16 +82,26 @@ commit_to_git() {
 }
 
 # Annotate each photo and update metadata
-find "$PHOTO_DIR" -type f -iname "*.jpg" | while read -r photo; do
-    annotate_photo "$photo" || { log_error "Annotation failed for $photo"; exit 1; }
-done
+find "$PHOTO_DIR" -type f -name '*.jpg' | while read -r photo; do
+    if [ -f "$photo" ]; then
+        echo "Processing photo: $photo"
+        annotate_photo "$photo"
+        if [ $? -ne 0 ]; then
+            log_error "Annotation failed for $photo"
+            exit 1
+        fi
 
-# Copy updated JSON files to the Git repository directory
-find "$PHOTO_DIR" -type f -iname "*.json" -exec cp {} "$GIT_REPO_DIR/" \;
-if [ $? -ne 0 ]; then
-    log_error "Failed to copy JSON files to Git repository directory"
-    exit 1
-fi
+        # Copy updated JSON file to the Git repository directory
+        json_file=${photo%.jpg}.json
+        cp "$json_file" "$GIT_REPO_DIR/"
+        if [ $? -ne 0 ]; then
+            log_error "Failed to copy JSON file to Git repository directory: $json_file"
+            exit 1
+        fi
+    else
+        log_error "Photo file not found: $photo"
+    fi
+done
 
 # Commit the changes to Git
 commit_to_git || { log_error "Git commit failed"; exit 1; }
