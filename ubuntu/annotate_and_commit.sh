@@ -35,6 +35,8 @@ annotate_photo() {
             return 1
         fi
 
+        echo "Generated annotation for $photo_path: $annotation_text"
+
         # Update the metadata JSON file with the annotation
         jq --arg annotation "$annotation_text" '.Annotation = {"Source": "Ollama:7b", "Text": $annotation}' "$json_path" > "${json_path}.tmp"
         if [ $? -ne 0 ]; then
